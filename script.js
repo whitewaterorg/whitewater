@@ -1,25 +1,26 @@
 async function searchUser() {
-  const username = document.getElementById('usernameInput').value;
+  const username = document.getElementById('usernameInput').value.trim();
   const results = document.getElementById('results');
   results.innerHTML = 'Loading...';
 
-  try {
-    // Get userId from username
-    const res1 = await fetch('https://users.roblox.com/v1/usernames/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usernames: [username] })
-    });
+  if (!username) {
+    results.innerHTML = 'Please enter a username.';
+    return;
+  }
 
+  try {
+    // Use old API that still supports GET requests
+    const res1 = await fetch(`https://api.roblox.com/users/get-by-username?username=${encodeURIComponent(username)}`);
     const data1 = await res1.json();
-    if (!data1.data.length) {
+
+    if (!data1.Id) {
       results.innerHTML = 'User not found!';
       return;
     }
 
-    const userId = data1.data[0].id;
+    const userId = data1.Id;
 
-    // Get user info
+    // Now use this ID to get extra user info (this endpoint works with GET and supports CORS)
     const res2 = await fetch(`https://users.roblox.com/v1/users/${userId}`);
     const userInfo = await res2.json();
 
@@ -32,7 +33,8 @@ async function searchUser() {
       <p><strong>Username:</strong> ${userInfo.name}</p>
       <p><strong>Created:</strong> ${new Date(userInfo.created).toLocaleString()}</p>
     `;
-  } catch (err) {
-    results.innerHTML = 'An error occurred while fetching data.';
+  } catch (error) {
+    console.error(error);
+    results.innerHTML = 'Error fetching user data. Try again later.';
   }
 }

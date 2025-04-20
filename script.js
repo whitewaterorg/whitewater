@@ -9,18 +9,18 @@ async function searchUser() {
   }
 
   try {
-    // Use old API that still supports GET requests
+    // ✅ GET request to old Roblox API (no CORS issues)
     const res1 = await fetch(`https://api.roblox.com/users/get-by-username?username=${encodeURIComponent(username)}`);
     const data1 = await res1.json();
 
-    if (!data1.Id) {
+    if (!data1 || !data1.Id) {
       results.innerHTML = 'User not found!';
       return;
     }
 
     const userId = data1.Id;
 
-    // Now use this ID to get extra user info (this endpoint works with GET and supports CORS)
+    // ✅ Get user profile details using GET request
     const res2 = await fetch(`https://users.roblox.com/v1/users/${userId}`);
     const userInfo = await res2.json();
 

@@ -1,7 +1,7 @@
 async function searchUser() {
   const username = document.getElementById('usernameInput').value.trim();
   const results = document.getElementById('results');
-  results.innerHTML = 'Loading...';
+  results.innerHTML = 'Loading... Lol';
 
   if (!username) {
     results.innerHTML = 'Please enter a username.';
